@@ -10,6 +10,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <meta property="fc:frame" content="vNext" />
       <body>{children}</body>
     </html>
   );

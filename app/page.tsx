@@ -14,4 +14,29 @@ const frameMetadata = getFrameMetadata({
     src: `${NEXT_PUBLIC_URL}/default.png`,
     aspectRatio: "1.91:1",
   },
+  input: {
+    text: "enter...",
+  },
+  postUrl: `${NEXT_PUBLIC_URL}/api/frame`,
 });
+
+export const metadata: Metadata = {
+  title: "Mint the NFT",
+  description: "Mint the NFT",
+  openGraph: {
+    title: "Mint the NFT",
+    description: "Mint the NFT",
+    images: [`${NEXT_PUBLIC_URL}/default.png`],
+  },
+  other: {
+    ...frameMetadata,
+  },
+};
+
+export default function Page() {
+  return (
+    <>
+      <h1>Mint the NFT</h1>
+    </>
+  );
+}

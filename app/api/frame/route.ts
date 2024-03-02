@@ -13,6 +13,7 @@ export async function POST(req: NextRequest): Promise<Response> {
   const NEXT_PUBLIC_URL = process.env.NEXT_PUBLIC_URL;
   let isEmail = false;
   const body: FrameRequest = await req.json();
+  const env = process.env.CROSSMIT_ENV || "staging";
 
   try {
     const { message } = await getFrameMessage(body, {
@@ -47,6 +48,24 @@ export async function POST(req: NextRequest): Promise<Response> {
     } else {
       recipientAddress = `solana:${input}`;
     }
+
+    const crossmintURL = `https://${env}.crossmint.com/api/2022-06-09/collections/${process.env.CROSSMINT_COLLECTION_ID}/nfts`;
+    const crossmintOptions = {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        "content-type": "application/json",
+        "x-api-key": process.env.CROSSMINT_API_KEY!,
+      },
+      body: JSON.stringify({
+        recipient: recipientAddress,
+        metadata: {
+          name: "Stockpile Sticker",
+          image: `${NEXT_PUBLIC_URL}/nft.png`,
+          description: "A sticker from Stockpile Labs",
+        },
+      }),
+    };
 
     return new NextResponse(
       getFrameHtmlResponse({

@@ -35,6 +35,47 @@ export async function POST(req: NextRequest): Promise<Response> {
       );
     }
 
+    if (process.env.WARPCAST_HASH && process.env.NEYNAR_API_KEY) {
+      const neynarURL = `https://api.neynar.com/v2/farcaster/cast?identifier=${process.env.WARPCAST_HASH}&type=hash`;
+
+      const neynarResponse = await fetch(neynarURL, {
+        headers: {
+          api_key: process.env.NEYNAR_API_KEY,
+          "content-type": "application/json",
+        },
+        method: "GET",
+      });
+
+      const data = await neynarResponse.json();
+
+      const reactions = await data.cast.reactions;
+
+      const hasRecasted = reactions.recasts.some(
+        (recast: { fid: Number }) => recast.fid === message?.interactor.fid
+      );
+
+      const hasLiked = reactions.likes.some(
+        (likes: { fid: Number }) => likes.fid === message?.interactor.fid
+      );
+
+      if (!hasRecasted || !hasLiked) {
+        return new NextResponse(
+          getFrameHtmlResponse({
+            image: {
+              src: `${NEXT_PUBLIC_URL}/error1.png`,
+            },
+            postUrl: `${NEXT_PUBLIC_URL}/api/frame`,
+            buttons: [
+              {
+                label: "Try Again",
+                action: "post",
+              },
+            ],
+          })
+        );
+      }
+    }
+
     if (input.slice(-4) === ".sol") {
       const { pubkey } = getDomainKeySync(input);
       const connection = new Connection("https://api.mainnet-beta.solana.com");
